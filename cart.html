@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Carts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        table {
+            width: 80%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carritos de Compras</h1>
+    <div id="cart-list" class="container"></div>
+    <button onclick="goBack()">Volver a productos</button>
+
+    <script>
+        const userId = 1; // Cambia según el usuario autenticado
+
+        // Obtener los carritos del usuario
+        fetch(`https://fakestoreapi.com/carts/user/${userId}`)
+            .then(response => response.json())
+            .then(carts => {
+                const cartListDiv = document.getElementById('cart-list');
+                
+                if (carts.length === 0) {
+                    cartListDiv.innerHTML = '<p>No hay carritos para este usuario.</p>';
+                    return;
+                }
+
+                // Crear tabla de carritos
+                let cartTable = `<table>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Fecha Solicitud</th>
+                                        <th>Acciones</th>
+                                    </tr>`;
+
+                carts.forEach(cart => {
+                    const cartDate = new Date(cart.date).toLocaleDateString();
+                    cartTable += `<tr>
+                                    <td>${cart.id}</td>
+                                    <td>${cartDate}</td>
+                                    <td><a href="order.html?cartId=${cart.id}">Ver</a></td>
+                                  </tr>`;
+                });
+
+                cartTable += `</table>`;
+                cartListDiv.innerHTML = cartTable;
+            })
+            .catch(error => {
+                console.error('Error al obtener carritos:', error);
+                document.getElementById('cart-list').innerHTML = '<p>Error cargando los carritos. Intente nuevamente más tarde.</p>';
+            });
+
+        // Función para regresar a la página de productos
+        function goBack() {
+            window.location.href = 'products.html';
+        }
+    </script>
+</body>
+</html>
